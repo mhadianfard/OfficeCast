@@ -86,9 +86,14 @@ io.on('connection', function(socket) {
         });
 
         cast.process.stderr.on('data', function(data) {
+            var message = data.toString().replace("\n", "<br/>");
+            if (message.indexOf('*** WARNING ***') != -1) {
+                // Ignore Avahi Warnings
+                return;
+            }
             io.emit('cast output', {
                 id: cast.id,
-                message: data.toString().replace("\n", "<br/>"),
+                message: message,
                 type: 'error'
             });
         });
