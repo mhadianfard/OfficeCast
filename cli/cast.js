@@ -52,8 +52,19 @@ function startApplication(deviceShortName, dashboardUrl)
 }
 
 process.on('uncaughtException', function(err) {
-  console.log(err.toString().replace('[','').replace(']',''));
+  console.error(err.toString().replace('[','').replace(']',''));
   process.exit(2);
+});
+
+process.stdin.on('readable', function(data) {
+    var chunk = process.stdin.read();
+    if (chunk !== null) {
+        var input = chunk.toString().trim();
+        if (input.toLocaleLowerCase() === "exit") {
+            console.log('Disconnecting.');
+            process.exit(0);
+        }
+    }
 });
 
 var args = process.argv.slice(2);

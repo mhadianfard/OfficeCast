@@ -7,6 +7,16 @@ var spawn = childProcess.spawn;
 
 var OfficeCast = {
     casts: {},
+
+    _getCast: function(castId)
+    {
+        var cast = this.casts[castId];
+        if (!cast) {
+            io.emit('cast error', 'Specified cast ('+castId+') does not exist');
+        }
+
+        return cast;
+    }
 };
 
 
@@ -28,33 +38,77 @@ io.on('connection', function(socket) {
     });
 
     socket.on('start cast', function(data) {
-        var cast = OfficeCast.casts[data.id];
-        if (!cast) {
-            socket.emit('cast error', 'Specified cast ('+data.id+') does not exist');
+        var cast = OfficeCast._getCast(data.id);
+        if (cast.isStarted) {
+            io.emit('cast output', {
+                id: cast.id,
+                message: "Already started.",
+                type: 'notice'
+            });
             return;
         }
+        console.log('Starting ' + cast.shortName + ': ', cast.url);
         cast.url = data.url;
         cast.process = spawn('node', ['cli/cast', cast.shortName, cast.url]);
+        cast.isStarted = true;
+        io.emit('cast started', {
+            id: cast.id,
+            url: cast.url,
+            isStarted: cast.isStarted,
+        });
+
         cast.process.stdout.on('data', function(data) {
-            socket.emit('cast output', {
+            io.emit('cast output', {
                 id: cast.id,
-                message: String.fromCharCode.apply(null, data),
-                type: 'stdout'
+                message: data.toString().replace("\n", "<br/>"),
+                type: 'success'
             });
         });
+
         cast.process.stderr.on('data', function(data) {
-            socket.emit('cast output', {
+            io.emit('cast output', {
                 id: cast.id,
-                message: String.fromCharCode.apply(null, data),
-                type: 'stderr'
+                message: data.toString().replace("\n", "<br/>"),
+                type: 'error'
             });
         });
+
         cast.process.on('close', function(code) {
-            socket.emit('cast close', {
+            console.log('Ended ' + cast.shortName + '.');
+            if (cast.killTimer) {
+                clearTimeout(cast.killTimer);
+                cast.killTimer = null;
+            }
+            cast.isStarted = false;
+            io.emit('cast close', {
                 id: cast.id,
+                isStarted: cast.isStarted,
                 code: code
             });
         });
+    });
+
+    socket.on('stop cast', function(data) {
+        var cast = OfficeCast._getCast(data.id);
+        if (!cast.isStarted) {
+            io.emit('cast output', {
+                id: cast.id,
+                message: "Already stopped.",
+                type: 'notice'
+            });
+            return;
+        }
+
+        cast.process.stdin.write('exit');
+        cast.killTimer = setTimeout(function() {
+            io.emit('cast output', {
+                id: cast.id,
+                message: "Forcing exit.",
+                type: 'error'
+            });
+            cast.killTimer = null;
+            cast.process.kill();
+        }, 1000);
     });
 });
 
