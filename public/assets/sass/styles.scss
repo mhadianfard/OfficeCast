@@ -1,5 +1,4 @@
 .office-cast {
-    h1 { display: none; }
 
     .connection {
         text-align: right;
@@ -12,6 +11,47 @@
         }
         &.online    { color: darkgreen; }
         &.offline   { color: red; }
+    }
+
+    .jumbotron {
+        margin-bottom: 0px;
+    }
+
+    .global-controls {
+        line-height: 50px;
+        background: #2f2f2f;
+        margin-bottom: 50px;
+
+
+        .control {
+            width: 150px;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+            vertical-align: middle;
+            font-weight: bold;
+
+            &.start {
+                color: greenyellow;
+                &:hover {
+                    background-color: rgba(173, 255, 47, 0.10);
+                }
+            }
+
+            &.stop {
+                color: orangered;
+                &:hover {
+                    background-color: rgba(255, 69, 0, 0.10);
+                }
+            }
+
+            &.restart {
+                color: dodgerblue;
+                &:hover {
+                    background-color: rgba(30, 144, 255, 0.10);
+                }
+            }
+        }
     }
 
     .casts {
@@ -62,10 +102,26 @@
                     }
 
                     &.disabled  {  color: #333!important; }
-                    &.start     { color: greenyellow; }
-                    &.stop      { color: orangered; }
-                    &.restart   { color: dodgerblue; }
+                    &.start {
+                        color: greenyellow;
+                        &:hover {
+                            background-color: rgba(173, 255, 47, 0.05);
+                        }
+                    }
 
+                    &.stop {
+                        color: orangered;
+                        &:hover {
+                            background-color: rgba(255, 69, 0, 0.05);
+                        }
+                    }
+
+                    &.restart {
+                        color: dodgerblue;
+                        &:hover {
+                            background-color: rgba(30, 144, 255, 0.05);
+                        }
+                    }
                 }
             }
 

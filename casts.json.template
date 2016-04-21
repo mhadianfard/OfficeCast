@@ -1,0 +1,25 @@
+{
+  "0": {
+    "id":         0,
+    "shortName":  "Cast A",
+    "url":        "http://www.sweettoothrewards.com"
+  },
+
+  "1": {
+    "id":         1,
+    "shortName":  "Cast B",
+    "url":        "http://www.sweettoothrewards.com"
+  },
+
+  "2": {
+    "id":         2,
+    "shortName":  "Cast C",
+    "url":        "http://www.sweettoothrewards.com"
+  },
+
+  "3": {
+    "id":         3,
+    "shortName":  "Cast D",
+    "url":        "http://www.sweettoothrewards.com"
+  }
+}

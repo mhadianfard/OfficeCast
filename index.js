@@ -2,11 +2,27 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const childProcess = require('child_process');
-var spawn = childProcess.spawn;
+const spawn = require('child_process').spawn;
+const fs = require('fs');
 
+/**
+ * Read Input File casts.json
+ */
+var casts;
+try {
+    var file = fs.readFileSync('casts.json', 'utf8');
+    casts = JSON.parse(file);
+
+} catch (err) {
+    casts = {};
+}
+
+/**
+ * Initialize OfficeCast
+ *
+ */
 var OfficeCast = {
-    casts: {},
+    casts: casts,
 
     _getCast: function(castId)
     {
@@ -19,10 +35,9 @@ var OfficeCast = {
     }
 };
 
-
-
 /**
  * Socket Setup
+ *
  */
 io.on('connection', function(socket) {
     console.log('Client Connected');

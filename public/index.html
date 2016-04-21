@@ -25,6 +25,20 @@
             </div>
         </div>
     </div>
+    <div class="global-controls">
+        <div class="control start">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+            <span class="control-label">Start All</span>
+        </div>
+        <div class="control stop">
+            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+            <span class="control-label">Stop All</span>
+        </div>
+        <div class="control restart">
+            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+            <span class="control-label">Restart All</span>
+        </div>
+    </div>
 
     <div class="casts row">
         <script id="template-cast" type="text/template">
@@ -58,12 +72,7 @@
     <script type="text/javascript" src="assets/js/client.js"></script>
     <script type="text/javascript">
         jQuery(function() {
-            OfficeCast.loadCasts(function() {
-                OfficeCast.addCast(null, 'Cast A', 'https://sweettooth.geckoboard.com/dashboards/3EC6BC77F0022373');
-                OfficeCast.addCast(null, 'Cast B', 'https://sweettooth.geckoboard.com/dashboards/B940A38314CCA1F5');
-                OfficeCast.addCast(null, 'Cast C', 'https://sweettooth.geckoboard.com/dashboards/3EC6BC77F0022373');
-                OfficeCast.addCast(null, 'Cast D', 'https://sweettooth.geckoboard.com/dashboards/B940A38314CCA1F5');
-            });
+            OfficeCast.loadCasts();
         });
     </script>
 </body>

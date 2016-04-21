@@ -16,11 +16,9 @@
             url: url,
             isStarted: isStarted? isStarted : false,
 
-            start: function(url)
+            start: function()
             {
-                if (url) {
-                    this.url = url;
-                }
+                this.url = this.dom.find('input.url').val();
 
                 if (!this.url) {
                     alert('No URL specified.');
@@ -49,6 +47,12 @@
                 }
 
                 socket.emit('stop cast', { id: this.id });
+            },
+
+            restart: function()
+            {
+                cast.stop();
+                cast.autoRestart(OfficeCast.config.restartTime);
             },
 
             /**
@@ -138,8 +142,7 @@
                 cast.stop();
             });
             cast.dom.find('.control.restart').click(function() {
-                cast.stop();
-                cast.autoRestart(OfficeCast.config.restartTime);
+                cast.restart();
             });
 
             socket.emit(isNew? 'new cast' : 'cast added', cast);
@@ -238,5 +241,21 @@
      * Execute on page load
      */
     $(function() {
+        var globalControls = $('.office-cast .global-controls');
+        globalControls.find('.start').click(function() {
+            $.each(OfficeCast.casts, function(index, cast) {
+                cast.start();
+            });
+        });
+        globalControls.find('.stop').click(function() {
+            $.each(OfficeCast.casts, function(index, cast) {
+                cast.stop();
+            });
+        });
+        globalControls.find('.restart').click(function() {
+            $.each(OfficeCast.casts, function(index, cast) {
+                cast.restart();
+            });
+        });
     });
 })(jQuery);
