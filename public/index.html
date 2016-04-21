@@ -58,10 +58,12 @@
     <script type="text/javascript" src="assets/js/client.js"></script>
     <script type="text/javascript">
         jQuery(function() {
-            OfficeCast.addCast('Cast A', 'https://sweettooth.geckoboard.com/dashboards/3EC6BC77F0022373');
-            OfficeCast.addCast('Cast B', 'https://sweettooth.geckoboard.com/dashboards/B940A38314CCA1F5');
-            OfficeCast.addCast('Cast C', 'https://sweettooth.geckoboard.com/dashboards/3EC6BC77F0022373');
-            OfficeCast.addCast('Cast D', 'https://sweettooth.geckoboard.com/dashboards/B940A38314CCA1F5');
+            OfficeCast.loadCasts(function() {
+                OfficeCast.addCast(null, 'Cast A', 'https://sweettooth.geckoboard.com/dashboards/3EC6BC77F0022373');
+                OfficeCast.addCast(null, 'Cast B', 'https://sweettooth.geckoboard.com/dashboards/B940A38314CCA1F5');
+                OfficeCast.addCast(null, 'Cast C', 'https://sweettooth.geckoboard.com/dashboards/3EC6BC77F0022373');
+                OfficeCast.addCast(null, 'Cast D', 'https://sweettooth.geckoboard.com/dashboards/B940A38314CCA1F5');
+            });
         });
     </script>
 </body>

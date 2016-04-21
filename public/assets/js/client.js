@@ -9,12 +9,12 @@
      * @returns {{id: *, shortName: *, url: *, isStarted: boolean}}
      * @constructor
      */
-    var Cast = function(id, shortName, url) {
+    var Cast = function(id, shortName, url, isStarted, isNew) {
         var cast = {
             id: id,
             shortName: shortName,
             url: url,
-            isStarted: false,
+            isStarted: isStarted? isStarted : false,
 
             start: function(url)
             {
@@ -28,8 +28,8 @@
                 }
 
                 if (cast.restartTimer) {
-                    cast.restartTimer = null;
                     window.clearTimeout(cast.restartTimer);
+                    cast.restartTimer = null;
                 }
 
                 socket.emit('start cast', {
@@ -41,9 +41,10 @@
             stop: function()
             {
                 if (cast.restartTimer) {
-                    cast.restartTimer = null;
                     window.clearTimeout(cast.restartTimer);
                     this.publish('Stopped.');
+                    this.dom.find('.control.stop').addClass('disabled');
+                    cast.restartTimer = null;
                     return;
                 }
 
@@ -63,6 +64,7 @@
                 var message = $('<div class="' + messageType + '">' + message + '</div>');
                 message.attr('title', new Date());
                 log.append(message);
+                log[0].scrollTop = log[0].scrollHeight;
 
                 return message;
             },
@@ -113,10 +115,12 @@
             restartTime: 30,    // seconds
         },
 
-        addCast: function(castName, castUrl)
+        addCast: function(castId, castName, castUrl, castIsStarted)
         {
-            var id = Object.keys(this.casts).length;
-            var cast = new Cast(id, castName, castUrl);
+            var isNew = (castId === null);
+            var id = isNew? Object.keys(this.casts).length : castId;
+            var isStarted = castIsStarted? castIsStarted : false;
+            var cast = new Cast(id, castName, castUrl, isStarted, isNew);
             var template = this._loadTemplateHtml('cast');
             cast.dom = $(template);
 
@@ -137,8 +141,32 @@
                 cast.stop();
                 cast.autoRestart(OfficeCast.config.restartTime);
             });
-            socket.emit('new cast', cast);
+
+            socket.emit(isNew? 'new cast' : 'cast added', cast);
+
+            if (isStarted) {
+                cast.dom.find('.control.start').addClass('disabled');
+                cast.dom.find('.control.stop').removeClass('disabled');
+                cast.dom.find('.control.restart').removeClass('disabled');
+                cast.publish('Already broadcasting: ' + cast.url, 'success');
+            }
+
             return cast;
+        },
+
+        loadCasts: function(freshCasts)
+        {
+            var self = this;
+            $.get('/casts', function(response) {
+                $.each(response, function(key, data) {
+                    self.addCast(data.id, data.shortName, data.url, data.isStarted);
+                });
+
+                if (Object.keys(self.casts).length == 0 && typeof freshCasts === "function") {
+                    console.log('No casts on server. Adding fresh ones...');
+                    freshCasts();
+                }
+            });
         },
 
         _loadTemplateHtml: function(templateName)
@@ -210,6 +238,5 @@
      * Execute on page load
      */
     $(function() {
-
     });
 })(jQuery);

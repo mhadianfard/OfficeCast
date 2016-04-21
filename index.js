@@ -31,6 +31,11 @@ io.on('connection', function(socket) {
        console.log('Client Disconnected');
     });
 
+    socket.on('cast added', function(data) {
+        var cast = OfficeCast._getCast(data.id);
+        console.log('Re-added: ', cast.shortName);
+    });
+
     socket.on('new cast', function(cast) {
         console.log('New Cast: ', cast.shortName);
         cast.process = null;
@@ -113,13 +118,25 @@ io.on('connection', function(socket) {
 });
 
 
-
-
-
 /**
  * Server
  */
 app.use(express.static('public'));
-http.listen(3000, function(){
+
+app.get('/casts', function(request, response) {
+    var data = [];
+    for (var id in OfficeCast.casts) {
+        var cast = OfficeCast.casts[id];
+        data.push({
+            id:         cast.id,
+            shortName:  cast.shortName,
+            url:        cast.url,
+            isStarted:  cast.isStarted
+        });
+    }
+    response.send(data);
+});
+
+http.listen(3000, function() {
     console.log('listening on *:3000');
 });
